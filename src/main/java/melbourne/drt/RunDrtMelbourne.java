@@ -1,9 +1,9 @@
 /* *********************************************************************** *
- * project: org.matsim.*												   *
+ * project: org.matsim.*
  *                                                                         *
  * *********************************************************************** *
  *                                                                         *
- * copyright       : (C) 2008 by the members listed in the COPYING,        *
+ * copyright       : (C) 2017 by the members listed in the COPYING,        *
  *                   LICENSE and WARRANTY file.                            *
  * email           : info at matsim dot org                                *
  *                                                                         *
@@ -16,43 +16,29 @@
  *   See also COPYING, LICENSE and WARRANTY file                           *
  *                                                                         *
  * *********************************************************************** */
-package org.matsim.example;
 
-import org.matsim.api.core.v01.Scenario;
-import org.matsim.core.config.Config;
-import org.matsim.core.config.ConfigUtils;
+package melbourne.drt;
+
+import org.matsim.contrib.drt.run.DrtConfigConsistencyChecker;
+import org.matsim.contrib.drt.run.DrtConfigGroup;
+import org.matsim.contrib.drt.run.DrtControlerCreator;
+import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
+import org.matsim.core.config.*;
 import org.matsim.core.controler.Controler;
-import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
-import org.matsim.core.scenario.ScenarioUtils;
+import org.matsim.vis.otfvis.OTFVisConfigGroup;
 
 /**
- * @author nagel
- *
+ * @author jbischoff
  */
-public class HelloWorld {
-// a comment
+public class RunDrtMelbourne {
 
 	public static void main(String[] args) {
-		
-		Config config ;
-		if ( args.length==0 || args[0]=="" ) {
-			// This creates a default matsim config:
-			config = ConfigUtils.createConfig();
-			config.controler().setLastIteration(1);
-			config.controler().setOverwriteFileSetting( OverwriteFileSetting.deleteDirectoryIfExists );
-		} else {
-			config = ConfigUtils.loadConfig(args[0]) ;
-		}
-		
 
-		// This creates a default matsim scenario (which is empty):
-		Scenario scenario = ScenarioUtils.createScenario(config) ;
-
-		Controler controler = new Controler( scenario ) ;
-
-		// This indeed runs iterations, but based on an empty scenario:
+		Config config = ConfigUtils.loadConfig("C:/Users/Joschka/Dropbox/melbourne-berlin/scenario/drt-scenario/input/config.xml", new DrtConfigGroup(), new DvrpConfigGroup(), new OTFVisConfigGroup());
+		config.addConfigConsistencyChecker(new DrtConfigConsistencyChecker());
+		config.checkConsistency();
+		Controler controler = DrtControlerCreator.createControler(config, false);
 		controler.run();
-
+		
 	}
-
 }
